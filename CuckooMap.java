@@ -14,27 +14,40 @@ public class CuckooMap<K, V> implements Map<K, V> {
 
     @Override
     public int size() {
-        return 0;
+        return this.size();
     }
 
     @Override
     public boolean isEmpty() {
-        return true;
+        if (this.size() == 0) {
+            return true;
+        }
+        return false;
     }
 
     @Override
-    public boolean containsKey(Object key) {
+    public boolean containsKey(Object key) { ///// hash key then check for value
+        int tempKey = hashKey(key);
+        if (this.containsKey(tempKey)) {
+            return true;
+        }
         return false;
     }
 
     @Override
     public boolean containsValue(Object value) {
+        if (this.containsValue(value)) {
+            return true;
+        }
         return false;
     }
 
     @Override
-    public V get(Object key) {
-        return null;
+    public V get(Object key) { ////////////////////////////// return the value at the input key?
+        if (this.isEmpty()) {
+            return null;
+        }
+        return this.get(values());
     }
 
     public MapEntry getEntry(int index) {
@@ -72,6 +85,10 @@ public class CuckooMap<K, V> implements Map<K, V> {
     @Override
     public Set<Entry<K, V>> entrySet() {
         return null;
+    }
+
+    private int hashKey(Object key) {
+        return (Math.abs(key.hashCode()) % this.size() + 3) % this.size();
     }
 
     public class MapEntry implements Entry<K, V> {
