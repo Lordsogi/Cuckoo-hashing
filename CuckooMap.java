@@ -1,5 +1,6 @@
 package com.mycompany.app;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -7,47 +8,51 @@ import java.util.Set;
 /**
  * CukooMap
  */
+
+
 public class CuckooMap<K, V> implements Map<K, V> {
+    private int size;
+    private int numberOfBuckets;
+    private ArrayList<MapEntry> hashtable = new ArrayList<>(numberOfBuckets);
 
     public CuckooMap(int numberOfBuckets) {
+        this.numberOfBuckets = numberOfBuckets;
     }
 
     @Override
     public int size() {
-        return this.size();
+        return size;
     }
 
     @Override
     public boolean isEmpty() {
-        if (this.size() == 0) {
-            return true;
-        }
-        return false;
+        return size == 0;
     }
 
     @Override
-    public boolean containsKey(Object key) { ///// hash key then check for value
-        int tempKey = hashKey(key);
-        if (this.containsKey(tempKey)) {
-            return true;
+    public boolean containsKey(Object key) {
+        Object tempKey = hashKey(key);
+        for (int i = 0; i < hashtable.size(); i++) {
+            if (hashtable.get(i).getKey() == tempKey) {
+                return true;
+            }
         }
         return false;
     }
 
     @Override
     public boolean containsValue(Object value) {
-        if (this.containsValue(value)) {
-            return true;
+        for (int i = 0; i < hashtable.size(); i++) {
+            if (hashtable.get(i).getValue() == value) {
+                return true;
+            }
         }
         return false;
     }
 
     @Override
-    public V get(Object key) { ////////////////////////////// return the value at the input key?
-        if (this.isEmpty()) {
-            return null;
-        }
-        return this.get(values());
+    public V get(Object key) {
+        return null;
     }
 
     public MapEntry getEntry(int index) {
@@ -56,20 +61,29 @@ public class CuckooMap<K, V> implements Map<K, V> {
 
     @Override
     public V put(K key, V value) {
+        MapEntry currentEntry = new MapEntry(key, value);
+
+        size++;
         return null;
     }
 
     @Override
     public V remove(Object key) {
+        size--;
         return null;
     }
 
     @Override
     public void putAll(Map<? extends K, ? extends V> m) {
+        for (int i = 0; 0 < hashtable.size(); i++) {
+            hashtable.set(i, null);
+        }
     }
 
     @Override
     public void clear() {
+        size = 1;
+        hashtable.clear();
     }
 
     @Override
