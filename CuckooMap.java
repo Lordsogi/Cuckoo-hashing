@@ -12,11 +12,17 @@ public class CuckooMap<K, V> implements Map<K, V> {
 
     private int numberOfBuckets;
     private int size;
+    private ArrayList<MapEntry> h1Map = new ArrayList<>();
+    private ArrayList<MapEntry> h2Map = new ArrayList<>();
     public CuckooMap(int numberOfBuckets) {
         this.numberOfBuckets = numberOfBuckets;
+        for (int i = 0; i < numberOfBuckets; i++) {
+            MapEntry tempNull = new MapEntry(null, null);
+            h2Map.add(i, tempNull);
+            h1Map.add(i, tempNull);
+        }
     }
-    private ArrayList<MapEntry> h1Map = new ArrayList<>(numberOfBuckets);
-    private ArrayList<MapEntry> h2Map = new ArrayList<>(numberOfBuckets);
+
 
     @Override
     public int size() {
@@ -27,6 +33,7 @@ public class CuckooMap<K, V> implements Map<K, V> {
     public boolean isEmpty() {
         return size == 0;
     }
+
     @Override
     public boolean containsKey(Object key) {
         return ((h1Map.get(h1((K) key)).getKey() == key) || (h2Map.get(h2((K) key)).getKey() == key));
@@ -77,7 +84,7 @@ public class CuckooMap<K, V> implements Map<K, V> {
     @Override
     public V remove(Object key) {
         if (h1Map.get(h1((K) key)).getKey() == key) {
-            h1Map.remove((K) key);
+            h1Map.remove(h1((K) key));
         } else {
             h2Map.remove(h2((K) key));
         }
@@ -87,9 +94,9 @@ public class CuckooMap<K, V> implements Map<K, V> {
 
     @Override
     public void putAll(Map<? extends K, ? extends V> m) {
-        for (int i = 0; i < numberOfBuckets; i++) {
-            h1Map.set(i, null);
-            h2Map.set(i, null);
+        ArrayList<MapEntry> tempMap = getEntry(m);
+        for (int i = 0; i < tempMap.size(); i++) {
+            put(tempMap.get(i).getKey(), tempMap.get(i).getValue());
         }
     }
 
@@ -116,10 +123,16 @@ public class CuckooMap<K, V> implements Map<K, V> {
     }
 
     public int h1 (K key) {
+        if (key == null) {
+            return 0;
+        }
         return key.hashCode() % numberOfBuckets;
     }
 
     public int h2 (K key) {
+        if (key == null) {
+            return 0;
+        }
         return (h1(key) +3) % numberOfBuckets;
     }
 
@@ -154,6 +167,16 @@ public class CuckooMap<K, V> implements Map<K, V> {
         }
     }
 
+    private ArrayList<MapEntry> getEntry (Map tempmap) {
+        ArrayList<MapEntry> returnMap = new ArrayList<>(numberOfBuckets * 2);
+        for (int i = 0; i < numberOfBuckets; i++) {
+            returnMap.add(h1Map.get(i));
+        }
+        for (int i = 0; i < numberOfBuckets; i++) {
+            returnMap.add(h2Map.get(i));
+        }
+        return returnMap;
+    }
 
     public class MapEntry implements Entry<K, V> {
         private K key;
@@ -180,7 +203,5 @@ public class CuckooMap<K, V> implements Map<K, V> {
             value = newValue;
             return oldValue;
         }
-
     }
-
 }
