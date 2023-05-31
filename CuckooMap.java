@@ -1,9 +1,6 @@
 package com.mycompany.app;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * CukooMap
@@ -109,7 +106,12 @@ public class CuckooMap<K, V> implements Map<K, V> {
 
     @Override
     public Set<K> keySet() {
-        return null;
+        Set returnSet = new HashSet();
+        for (int i = 0; i < numberOfBuckets; i++) {
+            returnSet.add(h1Map.get(i).getKey());
+            returnSet.add(h2Map.get(i).getKey());
+        }
+        return returnSet;
     }
 
     @Override
@@ -119,7 +121,12 @@ public class CuckooMap<K, V> implements Map<K, V> {
 
     @Override
     public Set<Entry<K, V>> entrySet() {
-        return null;
+        Set returnSet = new HashSet();
+        for (int i = 0; i < numberOfBuckets; i++) {
+            returnSet.add(h1Map.get(i));
+            returnSet.add(h2Map.get(i));
+        }
+        return returnSet;
     }
 
     public int h1 (K key) {
